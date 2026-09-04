@@ -1,0 +1,139 @@
+# ==============================================================================
+# FIELDCONTROL - DASHBOARD LOVELACE HOME ASSISTANT
+# Estética moderna Glassmorphism basada en la WebApp oficial de FieldControl.
+# ==============================================================================
+# Instrucciones de uso:
+# 1. En Home Assistant, ve a Ajustes -> Cuadros de mando (Dashboards).
+# 2. Crea un nuevo cuadro de mando en modo YAML o en blanco.
+# 3. Abre el editor de código YAML y pega el siguiente contenido.
+# ==============================================================================
+
+title: FieldControl Riego
+views:
+  - title: Panel Principal
+    icon: mdi:sprinkler-variant
+    badges:
+      - entity: binary_sensor.fieldcontrol_online
+        name: Estado
+      - entity: binary_sensor.fieldcontrol_sensor_de_lluvia
+        name: Sensor Lluvia
+      - entity: sensor.fieldcontrol_senal_wi_fi
+        name: Señal Wi-Fi
+
+    cards:
+      # ── BANNER CABECERA DE ESTADO ──
+      - type: markdown
+        content: |
+          ## 💧 FieldControl Smart Irrigation
+          **Estado:** {{ 'ONLINE 🟢' if is_state('binary_sensor.fieldcontrol_online', 'on') else 'OFFLINE 🔴' }} | **ID:** `{{ states('sensor.fieldcontrol_device_id') }}`
+          **Válvula Activa:** {{ states('sensor.fieldcontrol_valvula_activa') }} 
+          {% if is_state('binary_sensor.fieldcontrol_riego_activo', 'on') %}
+          ⏳ **Tiempo Restante:** {{ states('sensor.fieldcontrol_tiempo_restante') }} segundos
+          {% endif %}
+
+      # ── CONTROLES GENERALES Y MODO AUTOMÁTICO ──
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: switch.fieldcontrol_modo_automatico
+            name: Modo Auto
+            icon: mdi:robot-industrial
+          - type: entity
+            entity: switch.fieldcontrol_rele_accesorio
+            name: Relé Accesorio
+            icon: mdi:lightning-bolt-circle
+
+      # ── PARADA DE EMERGENCIA GENERAL ──
+      - type: button
+        name: 🛑 PARADA GENERAL (STOP ALL)
+        icon: mdi:stop-circle
+        tap_action:
+          action: call-service
+          service: fieldcontrol.stop_all
+        hold_action:
+          action: none
+        theme: dark
+
+      # ── GRID DE VÁLVULAS DE RIEGO (10 MINUTOS POR DEFECTO) ──
+      - type: grid
+        title: 🚿 Válvulas de Riego (Riego Manual 10 min)
+        columns: 2
+        square: false
+        cards:
+          # Válvula 1
+          - type: button
+            name: Válvula 1
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 0
+                minutes: 10
+            show_state: true
+
+          # Válvula 2
+          - type: button
+            name: Válvula 2
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 1
+                minutes: 10
+            show_state: true
+
+          # Válvula 3
+          - type: button
+            name: Válvula 3
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 2
+                minutes: 10
+            show_state: true
+
+          # Válvula 4
+          - type: button
+            name: Válvula 4
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 3
+                minutes: 10
+            show_state: true
+
+          # Válvula 5
+          - type: button
+            name: Válvula 5
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 4
+                minutes: 10
+            show_state: true
+
+          # Válvula 6
+          - type: button
+            name: Válvula 6
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: fieldcontrol.start_valve
+              target: {}
+              data:
+                valve: 5
+                minutes: 10
+            show_state: true
