@@ -1,0 +1,144 @@
+# ==============================================================================
+# FIELDCONTROL - PAQUETE HOME ASSISTANT (INTEGRACIÓN HTTP REST LOCAL)
+# ==============================================================================
+# Guía de Instalación:
+# 1. Copia este archivo en la carpeta `packages/` de tu Home Assistant.
+# 2. Asegúrate de tener habilitados los paquetes en tu `configuration.yaml`:
+#    homeassistant:
+#      packages: !include_dir_named packages
+# 3. Cambia la IP '192.168.1.50' por la dirección IP asignada a tu controlador FieldControl.
+# ==============================================================================
+
+homeassistant:
+  customize:
+    sensor.fieldcontrol_tiempo_restante:
+      icon: mdi:timer-sand
+    binary_sensor.fieldcontrol_sensor_lluvia:
+      icon: mdi:weather-pouring
+    switch.fieldcontrol_modo_auto:
+      icon: mdi:robot-industrial
+    switch.fieldcontrol_accesorio:
+      icon: mdi:lightning-bolt-circle
+
+# ------------------------------------------------------------------------------
+# 1. SENSORES HTTP REST (Consulta periódica de estado al ESP32)
+# ------------------------------------------------------------------------------
+rest:
+  - resource: "http://192.168.1.50/api/status"
+    scan_interval: 5 # Frecuencia de actualización en segundos
+    timeout: 3
+    sensor:
+      - name: "FieldControl Device ID"
+        value_template: "{{ value_json.device_id | default('Desconectado') }}"
+        icon: mdi:chip
+
+      - name: "FieldControl Riego Activo"
+        value_template: "{{ 'Sí' if value_json.irrigation_active else 'No' }}"
+        icon: mdi:water-pump
+
+      - name: "FieldControl Valvula Activa"
+        value_template: >
+          {% if value_json.irrigation_active and value_json.active_valve >= 0 %}
+            Válvula {{ value_json.active_valve + 1 }}
+          {% else %}
+            Ninguna
+          {% endif %}
+        icon: mdi:pipe-valve
+
+      - name: "FieldControl Valvula Activa Index"
+        value_template: "{{ value_json.active_valve | default(-1) }}"
+
+      - name: "FieldControl Tiempo Restante"
+        value_template: "{{ value_json.remaining_sec | default(0) }}"
+        unit_of_measurement: "s"
+        device_class: duration
+
+      - name: "FieldControl RSSI"
+        value_template: "{{ value_json.rssi | default(0) }}"
+        unit_of_measurement: "dBm"
+        device_class: signal_strength
+
+    binary_sensor:
+      - name: "FieldControl Sensor Lluvia"
+        value_template: "{{ value_json.rain_sensor | default(false) }}"
+        device_class: moisture
+
+      - name: "FieldControl Estado Modo Auto"
+        value_template: "{{ value_json.auto_enabled | default(false) }}"
+
+      - name: "FieldControl Estado Accesorio"
+        value_template: "{{ value_json.accessory_active | default(false) }}"
+
+      - name: "FieldControl Online"
+        value_template: "{{ value_json.online | default(false) }}"
+        device_class: connectivity
+
+# ------------------------------------------------------------------------------
+# 2. HELPERS / INPUT NUMBERS (Configuración de duración predeterminada)
+# ------------------------------------------------------------------------------
+input_number:
+  fieldcontrol_duracion_riego:
+    name: "Duración de Riego Manual (Minutos)"
+    initial: 10
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: "min"
+    icon: mdi:clock-outline
+
+# ------------------------------------------------------------------------------
+# 3. COMANDOS HTTP REST (Acciones enviadas al ESP32)
+# ------------------------------------------------------------------------------
+rest_command:
+  fieldcontrol_start_valve:
+    url: "http://192.168.1.50/api/manual/start?v={{ valve }}&t={{ minutes }}"
+    method: GET
+
+  fieldcontrol_stop_all:
+    url: "http://192.168.1.50/api/stop"
+    method: GET
+
+  fieldcontrol_set_auto_play:
+    url: "http://192.168.1.50/api/auto/play"
+    method: GET
+
+  fieldcontrol_set_auto_stop:
+    url: "http://192.168.1.50/api/auto/stop"
+    method: GET
+
+  fieldcontrol_set_accessory:
+    url: "http://192.168.1.50/api/acc/set?s={{ state }}"
+    method: GET
+
+# ------------------------------------------------------------------------------
+# 4. SWITCHES VIRTUALES (Interfaz amigable para Dashboard y Automatizaciones)
+# ------------------------------------------------------------------------------
+switch:
+  - platform: template
+    switches:
+      fieldcontrol_modo_auto:
+        friendly_name: "FieldControl Modo Automático"
+        value_template: "{{ is_state('binary_sensor.fieldcontrol_estado_modo_auto', 'on') }}"
+        turn_on:
+          service: rest_command.fieldcontrol_set_auto_play
+        turn_off:
+          service: rest_command.fieldcontrol_set_auto_stop
+        icon_template: >
+          {% if is_state('binary_sensor.fieldcontrol_estado_modo_auto', 'on') %}
+            mdi:robot-industrial
+          {% else %}
+            mdi:robot-industrial-off
+          {% endif %}
+
+      fieldcontrol_accesorio:
+        friendly_name: "FieldControl Relé Accesorio / Bomba"
+        value_template: "{{ is_state('binary_sensor.fieldcontrol_estado_accesorio', 'on') }}"
+        turn_on:
+          service: rest_command.fieldcontrol_set_accessory
+          data:
+            state: "1"
+        turn_off:
+          service: rest_command.fieldcontrol_set_accessory
+          data:
+            state: "0"
+        icon_template: mdi:lightning-bolt-circle

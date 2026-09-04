@@ -1,0 +1,45 @@
+blueprint:
+  name: FieldControl - Notificación y Pausa por Lluvia
+  description: >
+    Notifica en el dispositivo móvil y desactiva el modo automático de FieldControl
+    cuando el sensor de lluvia físico se activa.
+  domain: automation
+  input:
+    rain_sensor:
+      name: Sensor de Lluvia FieldControl
+      description: Selecciona la entidad binary_sensor de lluvia.
+      selector:
+        entity:
+          domain: binary_sensor
+    auto_mode_switch:
+      name: Interruptor de Modo Auto FieldControl
+      description: Selecciona la entidad switch del modo automático.
+      selector:
+        entity:
+          domain: switch
+    notify_device:
+      name: Dispositivo a Notificar
+      description: Dispositivo móvil registrado en Home Assistant para recibir alertas.
+      selector:
+        device:
+          integration: mobile_app
+
+trigger:
+  - platform: state
+    entity_id: !input rain_sensor
+    to: "on"
+
+action:
+  # 1. Desactivar modo automático para evitar riegos bajo lluvia
+  - service: switch.turn_off
+    target:
+      entity_id: !input auto_mode_switch
+  # 2. Detener riegos activos
+  - service: rest_command.fieldcontrol_stop_all
+
+  # 3. Notificación al móvil
+  - domain: mobile_app
+    type: notify
+    device_id: !input notify_device
+    title: "🌧️ FieldControl: Lluvia Detectada"
+    message: "El sensor de lluvia detectó precipitación. Se han suspendido los riegos programados."
