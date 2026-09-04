@@ -23,7 +23,7 @@ views:
     cards:
       - type: markdown
         content: >
-          ## FieldControl
+          # FieldControl PRO
 
           **Estado:** {{ 'ONLINE 🟢' if
           is_state('binary_sensor.fieldcontrol_online', 'on') else 'OFFLINE 🔴'
@@ -62,12 +62,14 @@ views:
         color: red
       - square: false
         type: grid
-        title: Zonas de riego 🚿 10min
+        title: Zonas de riego 💧​ 10min
         columns: 2
         cards:
-          - type: button
+          - show_name: true
+            show_icon: true
+            type: button
             name: Válvula 1
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -76,9 +78,10 @@ views:
                 valve: 0
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 2
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -87,9 +90,10 @@ views:
                 valve: 1
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 3
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -98,9 +102,10 @@ views:
                 valve: 2
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 4
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -109,9 +114,10 @@ views:
                 valve: 3
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 5
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -120,9 +126,10 @@ views:
                 valve: 4
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 6
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -131,9 +138,10 @@ views:
                 valve: 5
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 7
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -142,9 +150,10 @@ views:
                 valve: 6
                 minutes: 10
             show_state: true
+            color: green
           - type: button
             name: Válvula 8
-            icon: mdi:water-pump
+            icon: mdi:sprinkler-variant
             tap_action:
               action: call-service
               service: fieldcontrol.start_valve
@@ -153,3 +162,4 @@ views:
                 valve: 7
                 minutes: 10
             show_state: true
+            color: green
