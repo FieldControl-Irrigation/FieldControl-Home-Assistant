@@ -1,50 +1,33 @@
 """Plataforma de Sensores para FieldControl."""
 
-import aiohttp
-import async_timeout
-from datetime import timedelta
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
-
-SCAN_INTERVAL = timedelta(seconds=5)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Configura las entidades de sensor."""
-    host = entry.data["host"]
-
-    async def async_update_data():
-        async with async_timeout.timeout(4):
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{host}/api/status") as response:
-                    return await response.json()
-
-    coordinator = DataUpdateCoordinator(
-        hass,
-        logger=hass.components.sensor._LOGGER,
-        name="fieldcontrol_sensor_coordinator",
-        update_method=async_update_data,
-        update_interval=SCAN_INTERVAL,
-    )
-
-    await coordinator.async_config_entry_first_refresh()
+    data = hass.data[DOMAIN][entry.entry_id]
+    coordinator = data["coordinator"]
 
     async_add_entities([
-        FieldControlSensor(coordinator, "device_id", "FieldControl Device ID", "mdi:chip"),
-        FieldControlSensor(coordinator, "active_valve", "FieldControl Válvula Activa", "mdi:pipe-valve"),
-        FieldControlSensor(coordinator, "remaining_sec", "FieldControl Tiempo Restante", "mdi:timer-sand", "s"),
-        FieldControlSensor(coordinator, "rssi", "FieldControl Señal Wi-Fi", "mdi:wifi", "dBm"),
+        FieldControlSensor(coordinator, entry, "device_id", "Device ID", "mdi:chip"),
+        FieldControlSensor(coordinator, entry, "active_valve", "Válvula Activa", "mdi:pipe-valve"),
+        FieldControlSensor(coordinator, entry, "remaining_sec", "Tiempo Restante", "mdi:timer-sand", "s", SensorDeviceClass.DURATION),
+        FieldControlSensor(coordinator, entry, "rssi", "Señal Wi-Fi", "mdi:wifi", "dBm", SensorDeviceClass.SIGNAL_STRENGTH),
     ])
 
 class FieldControlSensor(CoordinatorEntity, SensorEntity):
     """Representa un sensor de FieldControl."""
 
-    def __init__(self, coordinator, key, name, icon, unit=None):
+    def __init__(self, coordinator, entry, key, name, icon, unit=None, device_class=None):
         super().__init__(coordinator)
+        self._entry = entry
         self._key = key
-        self._attr_name = name
+        self._attr_name = f"FieldControl {name}"
+        self._attr_unique_id = f"{entry.entry_id}_{key}"
         self._attr_icon = icon
         self._attr_native_unit_of_measurement = unit
+        self._attr_device_class = device_class
 
     @property
     def native_value(self):
