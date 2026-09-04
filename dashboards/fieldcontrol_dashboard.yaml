@@ -15,9 +15,9 @@ views:
     badges:
       - entity: binary_sensor.fieldcontrol_online
         name: Estado
-      - entity: binary_sensor.fieldcontrol_sensor_lluvia
+      - entity: binary_sensor.fieldcontrol_sensor_de_lluvia
         name: Sensor Lluvia
-      - entity: sensor.fieldcontrol_rssi
+      - entity: sensor.fieldcontrol_senal_wi_fi
         name: Señal Wi-Fi
 
     cards:
@@ -27,7 +27,7 @@ views:
           ## 💧 FieldControl Smart Irrigation
           **Estado:** {{ 'ONLINE 🟢' if is_state('binary_sensor.fieldcontrol_online', 'on') else 'OFFLINE 🔴' }} | **ID:** `{{ states('sensor.fieldcontrol_device_id') }}`
           **Válvula Activa:** {{ states('sensor.fieldcontrol_valvula_activa') }} 
-          {% if is_state('sensor.fieldcontrol_riego_activo', 'Sí') %}
+          {% if is_state('binary_sensor.fieldcontrol_riego_activo', 'on') %}
           ⏳ **Tiempo Restante:** {{ states('sensor.fieldcontrol_tiempo_restante') }} segundos
           {% endif %}
 
@@ -35,11 +35,11 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity
-            entity: switch.fieldcontrol_modo_auto
+            entity: switch.fieldcontrol_modo_automatico
             name: Modo Auto
             icon: mdi:robot-industrial
           - type: entity
-            entity: switch.fieldcontrol_accesorio
+            entity: switch.fieldcontrol_rele_accesorio
             name: Relé Accesorio
             icon: mdi:lightning-bolt-circle
 
@@ -49,7 +49,7 @@ views:
         icon: mdi:stop-circle
         tap_action:
           action: call-service
-          service: rest_command.fieldcontrol_stop_all
+          service: fieldcontrol.stop_all
         hold_action:
           action: none
         theme: dark
@@ -73,7 +73,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 0
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
@@ -85,7 +85,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 1
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
@@ -97,7 +97,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 2
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
@@ -109,7 +109,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 3
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
@@ -121,7 +121,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 4
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
@@ -133,7 +133,7 @@ views:
             icon: mdi:water-pump
             tap_action:
               action: call-service
-              service: rest_command.fieldcontrol_start_valve
+              service: fieldcontrol.start_valve
               service_data:
                 valve: 5
                 minutes: "{{ states('input_number.fieldcontrol_duracion_riego') | int }}"
