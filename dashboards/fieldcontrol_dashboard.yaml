@@ -23,7 +23,10 @@ views:
     cards:
       - type: markdown
         content: >
-          # FieldControl PRO
+          <img
+          src="https://raw.githubusercontent.com/FieldControl-Irrigation/FieldControl-Home-Assistant/main/custom_components/fieldcontrol/brand/logo_b.png"
+          style="width: 60px; height: auto;" />
+
 
           **Estado:** {{ 'ONLINE 🟢' if
           is_state('binary_sensor.fieldcontrol_online', 'on') else 'OFFLINE 🔴'
@@ -40,14 +43,20 @@ views:
           {% endif %}
       - type: horizontal-stack
         cards:
-          - type: entity
+          - type: tile
             entity: switch.fieldcontrol_modo_automatico
             name: Modo Auto
             icon: mdi:play
-          - type: entity
+            color: amber
+            tap_action:
+              action: toggle
+          - type: tile
             entity: switch.fieldcontrol_rele_accesorio
             name: Bomba de pileta
             icon: mdi:lightning-bolt-circle
+            color: blue
+            tap_action:
+              action: toggle
       - show_name: true
         show_icon: true
         type: button
@@ -60,106 +69,132 @@ views:
           action: none
         theme: dark
         color: red
-      - square: false
-        type: grid
-        title: Zonas de riego 💧​ 10min
-        columns: 2
+        icon_height: 70px
+      - type: vertical-stack
         cards:
-          - show_name: true
-            show_icon: true
-            type: button
-            name: Válvula 1
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 0
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 2
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 1
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 3
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 2
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 4
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 3
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 5
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 4
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 6
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 5
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 7
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 6
-                minutes: 10
-            show_state: true
-            color: green
-          - type: button
-            name: Válvula 8
-            icon: mdi:sprinkler-variant
-            tap_action:
-              action: call-service
-              service: fieldcontrol.start_valve
-              target: {}
-              data:
-                valve: 7
-                minutes: 10
-            show_state: true
-            color: green
+          - type: markdown
+            content: '### Zonas de riego 💧 10min'
+          - type: grid
+            square: false
+            columns: 2
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 1
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 0
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 2
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 1
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 3
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 2
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 4
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 3
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 5
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 4
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 6
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 5
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 7
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 6
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
+              - show_name: true
+                show_icon: true
+                type: button
+                name: Válvula 8
+                icon: mdi:sprinkler-variant
+                tap_action:
+                  action: call-service
+                  service: fieldcontrol.start_valve
+                  target: {}
+                  data:
+                    valve: 7
+                    minutes: 10
+                show_state: true
+                color: green
+                icon_height: 50px
